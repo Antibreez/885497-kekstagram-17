@@ -25,13 +25,13 @@ var likesMin = 15;
 var likesMax = 200;
 var commentsMax = 5;
 
-var getRandomSorting = function (a, b) {
+var getRandomSorting = function () {
   return Math.random() - 0.5;
 };
 
 var getArrayOfNumbers = function (number) {
   return Array(number).fill(1).map(function (num, index) {
-    return num += index;
+    return num + index;
   });
 };
 
