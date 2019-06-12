@@ -1,6 +1,6 @@
 'use strict';
 
-var USERS_COMMENTS = [
+var COMMENTS = [
   'Всё отлично!',
   'В целом всё неплохо. Но не всё.',
   'Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концов это просто непрофессионально.',
@@ -9,7 +9,7 @@ var USERS_COMMENTS = [
   'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'
 ];
 
-var USERS_NAMES = [
+var NAMES = [
   'Иван',
   'Антон',
   'Мария',
@@ -20,26 +20,26 @@ var USERS_NAMES = [
   'Цезарь'
 ];
 
-var imagesQuantity = 25;
-var likesMin = 15;
-var likesMax = 200;
-var commentsMax = 5;
+var Data = {
+  IMAGES: 25,
+  COMMENTS_MAX: 5,
+  LIKES_MIN: 15,
+  LIKES_MAX: 200,
+};
 
 var getRandomSorting = function () {
   return Math.random() - 0.5;
 };
 
-var getArrayOfNumbers = function (number) {
-  return Array(number).fill(1).map(function (num, index) {
-    return num + index;
-  });
+var generateArray = function (length, generator) {
+  return Array(length).fill(null).map(generator);
 };
 
-var getSortedNumbers = function (number) {
-  return getArrayOfNumbers(number).sort(getRandomSorting);
+var getSortedNumbers = function (num) {
+  return generateArray(num, function (_, index) {
+    return index + 1;
+  }).sort(getRandomSorting);
 };
-
-var imagesNumbers = getSortedNumbers(imagesQuantity);
 
 var getRandomNumber = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -52,20 +52,28 @@ var getRandomItem = function (array) {
 var getCommentData = function () {
   return {
     avatar: 'img/avatar-' + getRandomNumber(1, 6) + '.svg',
-    massage: getRandomItem(USERS_COMMENTS),
-    name: getRandomItem(USERS_NAMES)
+    massage: getRandomItem(COMMENTS),
+    name: getRandomItem(NAMES)
   };
 };
 
-var getImageData = function () {
+var getRandomComments = function (min, max) {
+  return generateArray(getRandomNumber(min, max), getCommentData);
+};
+
+var makeImageData = function (id) {
   return {
-    url: 'photos/' + imagesNumbers.pop() + '.jpg',
-    likes: getRandomNumber(likesMin, likesMax),
-    comments: Array(getRandomNumber(0, commentsMax)).fill(null).map(getCommentData)
+    url: 'photos/' + id + '.jpg',
+    likes: getRandomNumber(Data.LIKES_MIN, Data.LIKES_MAX),
+    comments: getRandomComments(0, Data.COMMENTS_MAX),
   };
 };
 
-var imagesData = Array(imagesQuantity).fill(null).map(getImageData);
+var getImagesData = function (num) {
+  return getSortedNumbers(num).map(makeImageData);
+};
+
+var imagesData = getImagesData(Data.IMAGES);
 
 var imagesList = document.querySelector('.pictures');
 var imageTemplate = document.querySelector('#picture')
