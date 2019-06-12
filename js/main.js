@@ -20,11 +20,16 @@ var NAMES = [
   'Цезарь'
 ];
 
-var Data = {
-  IMAGES: 25,
-  COMMENTS_MAX: 5,
-  LIKES_MIN: 15,
-  LIKES_MAX: 200,
+var IMAGE_NUM = 25;
+
+var Like = {
+  MIN: 15,
+  MAX: 200,
+};
+
+var Comment = {
+  MIN: 0,
+  MAX: 5,
 };
 
 var getRandomSorting = function () {
@@ -49,7 +54,7 @@ var getRandomItem = function (array) {
   return array[Math.floor(Math.random() * array.length)];
 };
 
-var getCommentData = function () {
+var makeComment = function () {
   return {
     avatar: 'img/avatar-' + getRandomNumber(1, 6) + '.svg',
     massage: getRandomItem(COMMENTS),
@@ -58,22 +63,20 @@ var getCommentData = function () {
 };
 
 var getRandomComments = function (min, max) {
-  return generateArray(getRandomNumber(min, max), getCommentData);
+  return generateArray(getRandomNumber(min, max), makeComment);
 };
 
 var makeImageData = function (id) {
   return {
     url: 'photos/' + id + '.jpg',
-    likes: getRandomNumber(Data.LIKES_MIN, Data.LIKES_MAX),
-    comments: getRandomComments(0, Data.COMMENTS_MAX),
+    likes: getRandomNumber(Like.MIN, Like.MAX),
+    comments: getRandomComments(Comment.MIN, Comment.MAX),
   };
 };
 
 var getImagesData = function (num) {
   return getSortedNumbers(num).map(makeImageData);
 };
-
-var imagesData = getImagesData(Data.IMAGES);
 
 var imagesList = document.querySelector('.pictures');
 var imageTemplate = document.querySelector('#picture')
@@ -91,11 +94,11 @@ var renderImage = function (image) {
 
 var addImages = function (target, images) {
   var fragment = document.createDocumentFragment();
-  images.forEach(function (element) {
-    fragment.appendChild(renderImage(element));
+  images.forEach(function (image) {
+    fragment.appendChild(renderImage(image));
   });
 
   target.appendChild(fragment);
 };
 
-addImages(imagesList, imagesData);
+addImages(imagesList, getImagesData(IMAGE_NUM));
