@@ -54,7 +54,7 @@ var getRandomItem = function (array) {
   return array[Math.floor(Math.random() * array.length)];
 };
 
-var makeComment = function () {
+var getComment = function () {
   return {
     avatar: 'img/avatar-' + getRandomNumber(1, 6) + '.svg',
     massage: getRandomItem(COMMENTS),
@@ -63,10 +63,10 @@ var makeComment = function () {
 };
 
 var getRandomComments = function (min, max) {
-  return generateArray(getRandomNumber(min, max), makeComment);
+  return generateArray(getRandomNumber(min, max), getComment);
 };
 
-var makeImageData = function (id) {
+var getImageData = function (id) {
   return {
     url: 'photos/' + id + '.jpg',
     likes: getRandomNumber(Like.MIN, Like.MAX),
@@ -75,7 +75,7 @@ var makeImageData = function (id) {
 };
 
 var getImagesData = function (num) {
-  return getSortedNumbers(num).map(makeImageData);
+  return getSortedNumbers(num).map(getImageData);
 };
 
 var imagesList = document.querySelector('.pictures');
@@ -84,12 +84,12 @@ var imageTemplate = document.querySelector('#picture')
   .querySelector('.picture');
 
 var renderImage = function (image) {
-  var imageItem = imageTemplate.cloneNode(true);
-  imageItem.querySelector('.picture__img').src = image.url;
-  imageItem.querySelector('.picture__comments').textContent = image.comments.length;
-  imageItem.querySelector('.picture__likes').textContent = image.likes;
+  var item = imageTemplate.cloneNode(true);
+  item.querySelector('.picture__img').src = image.url;
+  item.querySelector('.picture__comments').textContent = image.comments.length;
+  item.querySelector('.picture__likes').textContent = image.likes;
 
-  return imageItem;
+  return item;
 };
 
 var addImages = function (target, images) {
