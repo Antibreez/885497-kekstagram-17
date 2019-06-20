@@ -32,10 +32,14 @@ var Comment = {
   MAX: 5,
 };
 
-var Scale = {
+var ImageScale = {
   STEP: 25,
   MIN: 25,
   MAX: 100
+};
+
+var EditState = {
+  selectedFilter: 'none',
 };
 
 var uploadFileInput = document.querySelector('#upload-file');
@@ -47,7 +51,7 @@ var scaleControlValueInput = imageEditingContainer.querySelector('.scale__contro
 var uploadPreviewImage = imageEditingContainer.querySelector('.img-upload__preview img');
 var effectLevelContainer = imageEditingContainer.querySelector('.effect-level');
 var effectLevelPinElement = effectLevelContainer.querySelector('.effect-level__pin');
-var effectsRadioInput = imageEditingContainer.querySelectorAll('.effects__radio');
+var imageEffects = imageEditingContainer.querySelector('.img-upload__effects');
 
 var getRandomSorting = function () {
   return Math.random() - 0.5;
@@ -130,6 +134,10 @@ var isEscapeKey = function (evt) {
   return evt.key === 'Esc' || evt.key === 'Escape';
 };
 
+var isEnterKey = function (evt) {
+  return evt.key === 'Enter';
+};
+
 var onEscapePress = function (evt) {
   return isEscapeKey(evt) && closeImageEditing();
 };
@@ -139,10 +147,14 @@ var openImageEditing = function () {
   document.addEventListener('keydown', onEscapePress);
 };
 
+var clearInput = function (input) {
+  input.value = '';
+};
+
 var closeImageEditing = function () {
+  clearInput(uploadFileInput);
   hideElement(imageEditingContainer);
   document.removeEventListener('keydown', onEscapePress);
-  uploadFileInput.value = null;
 };
 
 var onFileUploadChange = function () {
@@ -154,85 +166,91 @@ var onImageUploadCancelClick = function () {
 };
 
 var onImageUploadCancelPress = function (evt) {
-  if (evt.key === 'Enter') {
-    closeImageEditing();
-  }
+  return isEnterKey(evt) && closeImageEditing();
+};
+
+var makeEffect = function (name, formula) {
+  return function (value) {
+    return name + '(' + formula(value) + ')';
+  };
+};
+
+var getDecimal = function (value) {
+  return Math.round(value) / 100;
+};
+
+var getPercent = function (value) {
+  return Math.round(value) + '%';
+};
+
+var getPixels = function (value) {
+  return Math.round(value * 3) / 100 + 'px';
+};
+
+var getBrightnessNumber = function (value) {
+  return Math.round(value * 2) / 100 + 1;
+};
+
+var Effect = {
+  scale: makeEffect('scale', getDecimal),
+  chrome: makeEffect('grayscale', getDecimal),
+  sepia: makeEffect('sepia', getDecimal),
+  marvin: makeEffect('invert', getPercent),
+  phobos: makeEffect('blur', getPixels),
+  heat: makeEffect('brightness', getBrightnessNumber)
 };
 
 var getScaleDecrease = function (value) {
-  var newValue = value - Scale.STEP;
-  return (newValue > Scale.MIN) ? newValue : Scale.MIN;
+  var newValue = value - ImageScale.STEP;
+  return (newValue > ImageScale.MIN) ? newValue : ImageScale.MIN;
 };
 
 var getScaleIncrease = function (value) {
-  var newValue = value + Scale.STEP;
-  return (newValue < Scale.MAX) ? newValue : Scale.MAX;
+  var newValue = value + ImageScale.STEP;
+  return (newValue < ImageScale.MAX) ? newValue : ImageScale.MAX;
 };
 
-var onScaleControlSmallerClick = function () {
-  var value = parseInt(scaleControlValueInput.value.slice(0, -1), 10);
-  var newValue = getScaleDecrease(value);
-  scaleControlValueInput.value = newValue + '%';
-  uploadPreviewImage.style.transform = 'scale(' + (newValue / 100) + ')';
+var onScaleControlClick = function (controlValue) {
+  return function () {
+    var value = parseInt(scaleControlValueInput.value.slice(0, -1), 10);
+    var newValue = controlValue(value);
+    scaleControlValueInput.value = newValue + '%';
+    uploadPreviewImage.style.transform = Effect.scale(newValue);
+  };
 };
 
-var onScaleControlBiggerClick = function () {
-  var value = parseInt(scaleControlValueInput.value.slice(0, -1), 10);
-  var newValue = getScaleIncrease(value);
-  scaleControlValueInput.value = newValue + '%';
-  uploadPreviewImage.style.transform = 'scale(' + (newValue / 100) + ')';
+var hideEffect = function () {
+  uploadPreviewImage.className = '';
+  hideElement(effectLevelContainer);
+  uploadPreviewImage.style.filter = '';
 };
 
-var onEffectButtonClick = function (thumbnail, image) {
-  thumbnail.addEventListener('click', function () {
-    image.className = '';
-    hideElement(effectLevelContainer);
-    uploadPreviewImage.style.filter = '';
-    if (thumbnail.value !== 'none') {
-      image.classList.add('effects__preview--' + thumbnail.value);
-      showElement(effectLevelContainer);
-    }
-  });
+var addEffect = function (effect) {
+  uploadPreviewImage.classList.add('effects__preview--' + effect);
+  showElement(effectLevelContainer);
+  EditState.selectedFilter = effect;
 };
 
-var isContainsClass = function (classValue, item) {
-  return item.classList.contains(classValue);
+var onChangeEffect = function (evt) {
+  hideEffect();
+  if (evt.target.value !== 'none') {
+    addEffect(evt.target.value);
+  }
 };
 
 var onEffectPinClick = function () {
   var effectValue = effectLevelPinElement.offsetLeft * 100 / 455;
-
-  if (isContainsClass('effects__preview--chrome', uploadPreviewImage)) {
-    uploadPreviewImage.style.filter = 'grayscale(' + (effectValue / 100) + ')';
-  }
-
-  if (isContainsClass('effects__preview--sepia', uploadPreviewImage)) {
-    uploadPreviewImage.style.filter = 'sepia(' + (effectValue / 100) + ')';
-  }
-
-  if (isContainsClass('effects__preview--marvin', uploadPreviewImage)) {
-    uploadPreviewImage.style.filter = 'invert(' + effectValue + '%)';
-  }
-
-  if (isContainsClass('effects__preview--phobos', uploadPreviewImage)) {
-    uploadPreviewImage.style.filter = 'blur(' + (effectValue * 3 / 100) + 'px)';
-  }
-
-  if (isContainsClass('effects__preview--heat', uploadPreviewImage)) {
-    uploadPreviewImage.style.filter = 'brightness(' + ((effectValue * 2 / 100) + 1) + ')';
-  }
+  uploadPreviewImage.style.filter = Effect[EditState.selectedFilter](effectValue);
 };
 
 uploadFileInput.addEventListener('change', onFileUploadChange);
 uploadCancelButton.addEventListener('click', onImageUploadCancelClick);
 uploadCancelButton.addEventListener('keydown', onImageUploadCancelPress);
 
-scaleControlSmallerButton.addEventListener('click', onScaleControlSmallerClick);
-scaleControlBiggerButton.addEventListener('click', onScaleControlBiggerClick);
+scaleControlSmallerButton.addEventListener('click', onScaleControlClick(getScaleDecrease));
+scaleControlBiggerButton.addEventListener('click', onScaleControlClick(getScaleIncrease));
 
-for (var i = 0; i < effectsRadioInput.length; i++) {
-  onEffectButtonClick(effectsRadioInput[i], uploadPreviewImage);
-}
+imageEffects.addEventListener('change', onChangeEffect);
 
 effectLevelPinElement.addEventListener('mouseup', onEffectPinClick);
 
