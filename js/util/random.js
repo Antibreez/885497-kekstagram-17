@@ -1,6 +1,10 @@
 'use strict';
 
 (function () {
+  var getRandomSorting = function () {
+    return Math.random() - 0.5;
+  };
+
   var getRandomNumber = function (min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   };
@@ -11,6 +15,7 @@
 
   window.Random = {
     getNum: getRandomNumber,
-    getItem: getRandomItem
+    getItem: getRandomItem,
+    getSorting: getRandomSorting
   };
 })();

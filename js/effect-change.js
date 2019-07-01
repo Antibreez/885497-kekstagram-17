@@ -1,8 +1,6 @@
 'use strict';
 
-(function () {
-  var DOM = window.DOM;
-
+(function (DOM) {
   var uploadPreviewImage = document.querySelector('.img-upload__preview img');
   var effectLevelContainer = document.querySelector('.effect-level');
 
@@ -15,20 +13,8 @@
     uploadPreviewImage.className = 'effects__preview--' + effect;
   };
 
-  // var renderEffect = function () {
-  //   removeEffect();
-
-  //   if (!EffectControl.hasEffect()) {
-  //     hideElement(effectLevelContainer);
-  //     return;
-  //   }
-
-  //   addEffect(EffectControl.selected);
-  //   showElement(effectLevelContainer);
-  // };
-
   window.EffectChange = {
-    Control: {
+    control: {
       selected: 'none',
       select: function (effect) {
         this.selected = effect;
@@ -38,16 +24,21 @@
       }
     },
 
-    Render: function () {
+    render: function () {
       removeEffect();
 
-      if (!this.Control.hasEffect()) {
+      if (!this.control.hasEffect()) {
         DOM.Element.hide(effectLevelContainer);
         return;
       }
 
-      addEffect(this.Control.selected);
+      addEffect(this.control.selected);
       DOM.Element.show(effectLevelContainer);
+    },
+
+    reset: function () {
+      this.control.selected = 'none';
+      this.render();
     }
   };
-})();
+})(window.DOM);

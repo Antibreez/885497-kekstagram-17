@@ -1,11 +1,6 @@
 'use strict';
 
-(function () {
-  var DOM = window.DOM;
-  var Mock = window.Mock;
-  var Upload = window.Upload;
-  var Data = window.Data;
-
+(function (DOM, Mock, UploadPreview) {
   var uploadFileInput = document.querySelector('#upload-file');
   var effectLevelContainer = document.querySelector('.effect-level');
 
@@ -32,14 +27,14 @@
     target.appendChild(fragment);
   };
 
-  var UploadPopup = new Upload();
+  var uploadPreview = new UploadPreview();
 
   var onFileUploadChange = function () {
-    UploadPopup.open();
+    uploadPreview.open();
   };
 
   uploadFileInput.addEventListener('change', onFileUploadChange);
 
-  addImages(imagesList, Mock.load(Data.IMAGE_NUM));
+  addImages(imagesList, Mock.load(25));
   DOM.Element.hide(effectLevelContainer);
-})();
+})(window.DOM, window.Mock, window.UploadPreview);

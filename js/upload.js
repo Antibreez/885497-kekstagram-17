@@ -1,25 +1,29 @@
 'use strict';
 
-(function () {
-  var DOM = window.DOM;
-  var EffectChange = window.EffectChange;
-  var Scale = window.Scale;
+(function (DOM, EffectChange, Scale, EffectLevel) {
+  var makeOnMouseDown = DOM.Event.make.onMouseDown;
 
   var uploadFileInput = document.querySelector('#upload-file');
 
-  var imageEditingContainer = document.querySelector('.img-upload__overlay');
-  var uploadCancelButton = imageEditingContainer.querySelector('#upload-cancel');
+  var imageContainer = document.querySelector('.img-upload__overlay');
+  var uploadCancelButton = imageContainer.querySelector('#upload-cancel');
 
-  var scaleDownButton = imageEditingContainer.querySelector('.scale__control--smaller');
-  var scaleUpButton = imageEditingContainer.querySelector('.scale__control--bigger');
+  var scaleDownButton = imageContainer.querySelector('.scale__control--smaller');
+  var scaleUpButton = imageContainer.querySelector('.scale__control--bigger');
 
-  var imageEffects = imageEditingContainer.querySelector('.img-upload__effects');
+  var effectLine = imageContainer.querySelector('.effect-level__line');
+  var effectPin = imageContainer.querySelector('.effect-level__pin');
+  var effectDepth = imageContainer.querySelector('.effect-level__depth');
 
-  var imageDescriptionInput = imageEditingContainer.querySelector('.text__description');
+  var imageEffects = imageContainer.querySelector('.img-upload__effects');
+
+  var imageDescriptionInput = imageContainer.querySelector('.text__description');
 
   var onChangeEffect = function (evt) {
-    EffectChange.Control.select(evt.target.value);
-    EffectChange.Render();
+    EffectChange.control.select(evt.target.value);
+    EffectChange.render();
+    EffectLevel.reset();
+    EffectLevel.calc();
   };
 
   var onScaleUpClick = function () {
@@ -32,53 +36,107 @@
     Scale.render();
   };
 
-  function Upload() {
+  var onEffectLineDown = function (evt) {
+    evt.preventDefault();
+    EffectLevel.dragged = false;
+
+    var onEffectLineUp = function () {
+      if (!EffectLevel.dragged && (evt.target !== effectPin)) {
+        effectPin.style.left = evt.offsetX + 'px';
+        effectDepth.style.width = evt.offsetX + 'px';
+        EffectLevel.calc();
+      }
+
+      effectLine.removeEventListener('mouseup', onEffectLineUp);
+    };
+
+    effectLine.addEventListener('mouseup', onEffectLineUp);
+  };
+
+  var onEffectPinMouseDown = function (evt) {
+    EffectLevel.Start.setX(evt);
+    EffectLevel.Start.setOffset();
+  };
+
+  var onEffectPinMouseMove = function (x, y, moveEvt) {
+    window.requestAnimationFrame(function () {
+      if (EffectLevel.isInRange.min(moveEvt) && EffectLevel.isInRange.max(moveEvt)) {
+        effectPin.style.left = effectPin.offsetLeft - x + 'px';
+        effectDepth.style.width = effectPin.offsetLeft - x + 'px';
+      } else if (!EffectLevel.isInRange.min(moveEvt)) {
+        effectPin.style.left = EffectLevel.Range.MIN;
+        effectDepth.style.width = EffectLevel.Range.MIN;
+      } else if (!EffectLevel.isInRange.max(moveEvt)) {
+        effectPin.style.left = EffectLevel.Range.MAX + 'px';
+        effectDepth.style.width = EffectLevel.Range.MAX + 'px';
+      }
+
+      EffectLevel.calc();
+      EffectLevel.dragged = true;
+    });
+  };
+
+  var onEffectPinMouseUp = function () {
+    effectPin.addEventListener('click', function (evt) {
+      evt.preventDefault();
+    }, {once: true});
+  };
+
+  function UploadPreview() {
     this.open = this.open.bind(this);
     this.close = this.close.bind(this);
     this._onEscPress = this._onEscPress.bind(this);
     this._onEnterPress = this._onEnterPress.bind(this);
-  };
+    this._onMouseDown = this._onMouseDown.bind(this);
+  }
 
-  Upload.prototype.open = function () {
-    DOM.Element.show(imageEditingContainer);
+  UploadPreview.prototype.open = function () {
+    DOM.Element.show(imageContainer);
     this._addEventListeners();
   };
 
-  Upload.prototype.close = function () {
-    DOM.Element.hide(imageEditingContainer);
+  UploadPreview.prototype.close = function () {
+    DOM.Element.hide(imageContainer);
     DOM.Element.clear(uploadFileInput);
     this._removeEventListeners();
+    EffectChange.reset();
   };
 
-  Upload.prototype._onEscPress = function (evt) {
+  UploadPreview.prototype._onEscPress = function (evt) {
     return DOM.Event.isEscapeKey(evt)
       && DOM.Event.isNotTarget(evt, imageDescriptionInput)
       && this.close();
   };
 
-  Upload.prototype._onEnterPress = function (evt) {
+  UploadPreview.prototype._onEnterPress = function (evt) {
     return DOM.Event.isEnterKey(evt) && this.close();
   };
 
-  Upload.prototype._addEventListeners = function () {
+  UploadPreview.prototype._onMouseDown = makeOnMouseDown(onEffectPinMouseDown, onEffectPinMouseMove, onEffectPinMouseUp);
+
+  UploadPreview.prototype._addEventListeners = function () {
     document.addEventListener('keydown', this._onEscPress);
 
+    effectPin.addEventListener('mousedown', this._onMouseDown);
     uploadCancelButton.addEventListener('keydown', this._onEscPress);
     uploadCancelButton.addEventListener('click', this.close);
     imageEffects.addEventListener('change', onChangeEffect);
     scaleDownButton.addEventListener('click', onScaleDownClick);
     scaleUpButton.addEventListener('click', onScaleUpClick);
+    effectLine.addEventListener('mousedown', onEffectLineDown);
   };
 
-  Upload.prototype._removeEventListeners = function () {
+  UploadPreview.prototype._removeEventListeners = function () {
     document.removeEventListener('keydown', this._onEscPress);
 
+    effectPin.removeEventListener('mousedown', this._onMouseDown);
     uploadCancelButton.removeEventListener('keydown', this._onEscPress);
     uploadCancelButton.removeEventListener('click', this.close);
     imageEffects.removeEventListener('change', onChangeEffect);
     scaleDownButton.removeEventListener('click', onScaleDownClick);
     scaleUpButton.removeEventListener('click', onScaleUpClick);
+    effectLine.removeEventListener('mousedown', onEffectLineDown);
   };
 
-  window.Upload = Upload;
-})();
+  window.UploadPreview = UploadPreview;
+})(window.DOM, window.EffectChange, window.Scale, window.EffectLevel);
