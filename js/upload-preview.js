@@ -82,13 +82,13 @@
     }, {once: true});
   };
 
-  function UploadPreview() {
+  var UploadPreview = function () {
     this.open = this.open.bind(this);
     this.close = this.close.bind(this);
     this._onEscPress = this._onEscPress.bind(this);
     this._onEnterPress = this._onEnterPress.bind(this);
     this._onMouseDown = this._onMouseDown.bind(this);
-  }
+  };
 
   UploadPreview.prototype.open = function () {
     DOM.Element.show(imageContainer);

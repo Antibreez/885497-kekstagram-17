@@ -25,7 +25,7 @@
 
     render: function () {
       scaleInput.value = this.value + '%';
-      uploadPreviewImage.style.transform = Effect.scale(this.value);
+      uploadPreviewImage.style.transform = EffectLevel.Effect.scale(this.value);
     }
   };
 })(window.Effect, window.Constants);

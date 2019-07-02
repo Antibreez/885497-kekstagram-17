@@ -52,6 +52,8 @@
   };
 
   window.EffectLevel = {
+    Effect: Effect,
+
     Range: {
       MIN: 0,
       MAX: getNum(width) - getNum(paddingLeft) - getNum(paddingRight),

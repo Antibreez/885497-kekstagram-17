@@ -21,20 +21,14 @@
     'Цезарь'
   ];
 
-  var AvatarNum = {
+  var AvatarId = {
     MIN: 1,
     MAX: 6
   };
 
-  var ImageActivity = {
-    Like: {
-      MIN: 15,
-      MAX: 200
-    },
-    Comment: {
-      MIN: 0,
-      MAX: 5
-    }
+  var Image = {
+    LIKE: {MIN: 15, MAX: 200},
+    COMMENT: {MIN: 0, MAX: 5}
   };
 
   var generateArray = function (length, generator) {
@@ -49,7 +43,7 @@
 
   var getComment = function () {
     return {
-      avatar: 'img/avatar-' + Random.getNum(AvatarNum.MIN, AvatarNum.MAX) + '.svg',
+      avatar: 'img/avatar-' + Random.getNum(AvatarId.MIN, AvatarId.MAX) + '.svg',
       massage: Random.getItem(COMMENTS),
       name: Random.getItem(NAMES)
     };
@@ -62,13 +56,13 @@
   var getImageData = function (id) {
     return {
       url: 'photos/' + id + '.jpg',
-      likes: Random.getNum(ImageActivity.Like.MIN, ImageActivity.Like.MAX),
-      comments: getRandomComments(ImageActivity.Comment.MIN, ImageActivity.Comment.MAX),
+      likes: Random.getNum(Image.LIKE.MIN, Image.LIKE.MAX),
+      comments: getRandomComments(Image.COMMENT.MIN, Image.COMMENT.MAX),
     };
   };
 
   var getImagesData = function (num) {
-    return getSortedNumbers(num).map(getImageData);
+    return getSortedNumbers(num || IMAGE_NUM).map(getImageData);
   };
 
   window.Mock = {
