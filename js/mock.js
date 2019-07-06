@@ -21,6 +21,8 @@
     'Цезарь'
   ];
 
+  var IMAGE_NUM = 25;
+
   var AvatarId = {
     MIN: 1,
     MAX: 6

@@ -5,7 +5,10 @@
     return function (evt) {
       evt.preventDefault();
 
-      var start = {x: evt.clientX, y: evt.clientY};
+      var start = {
+        x: evt.clientX,
+        y: evt.clientY
+      };
 
       onDown(evt);
 
