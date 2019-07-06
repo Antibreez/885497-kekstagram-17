@@ -74,18 +74,18 @@
     this.onChange(getEffectVolume(this._constrains.RANGE));
   };
 
-  //Slider.prototype._onMouseDown = makeOnMouseDown(this._onPinMouseDown, this._onPinMouseMove);
-
   Slider.prototype.addEventListeners = function () {
     effectPin.addEventListener(
-        'mousedown', makeOnMouseDown(this._onPinMouseDown, this._onPinMouseMove)
+        'mousedown',
+        makeOnMouseDown(this._onPinMouseDown, this._onPinMouseMove)
     );
     effectLine.addEventListener('click', this._onLineClick);
   };
 
   Slider.prototype.removeEventListeners = function () {
     effectPin.removeEventListener(
-        'mousedown', makeOnMouseDown(this._onPinMouseDown, this._onPinMouseMove)
+        'mousedown',
+        makeOnMouseDown(this._onPinMouseDown, this._onPinMouseMove)
     );
     effectLine.removeEventListener('click', this._onLineClick);
   };
