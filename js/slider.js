@@ -84,7 +84,7 @@
   };
 
   Slider.prototype._onPinMouseMove = function (x) {
-    var shift = getShift(x)
+    var shift = getShift(x);
     return canMove(shift) && this._moveX(shift);
   };
 
