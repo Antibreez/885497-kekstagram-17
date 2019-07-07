@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var makeEffect = function (name, formula) {
+  var makeFilter = function (name, formula) {
     return function (value) {
       return name + '(' + formula(value) + ')';
     };
@@ -16,19 +16,24 @@
   };
 
   var getPixel = function (value) {
-    return (Math.round(value * 3) / 100) + 'px';
+    return Math.round(value * 3) / 100 + 'px';
   };
 
   var getBrightness = function (value) {
-    return (Math.round(value * 2) / 100) + 1;
+    return Math.round(value * 2) / 100 + 1;
+  };
+
+  var getPurge = function () {
+    return '';
   };
 
   window.Effect = {
-    scale: makeEffect('scale', getDecimal),
-    chrome: makeEffect('grayscale', getDecimal),
-    sepia: makeEffect('sepia', getDecimal),
-    marvin: makeEffect('invert', getPercent),
-    phobos: makeEffect('blur', getPixel),
-    heat: makeEffect('brightness', getBrightness)
+    scale: makeFilter('scale', getDecimal),
+    chrome: makeFilter('grayscale', getDecimal),
+    sepia: makeFilter('sepia', getDecimal),
+    marvin: makeFilter('invert', getPercent),
+    phobos: makeFilter('blur', getPixel),
+    heat: makeFilter('brightness', getBrightness),
+    none: getPurge,
   };
 })();
