@@ -1,6 +1,6 @@
 'use strict';
 
-(function (ImageScale, SliderData, Zoom, Slider, Effect) {
+(function (ImageScale, Zoom, Slider, Effect) {
   var previewImage = document.querySelector('.img-upload__preview img');
   var effectFields = document.querySelector('.img-upload__effects');
   var effectNone = effectFields.querySelector('#effect-none');
@@ -12,7 +12,7 @@
     this._onSliderChange = this._onSliderChange.bind(this);
 
     this._zoom = new Zoom(this._onZoomChange, ImageScale);
-    this._slider = new Slider(this._onSliderChange, SliderData);
+    this._slider = new Slider(this._onSliderChange);
   };
 
   EffectController.prototype.addEventListeners = function () {
@@ -61,14 +61,8 @@
   };
 
   EffectController.prototype._onSliderChange = function (volume) {
-    // volume = 0..100 (%)
     previewImage.style.filter = Effect[this._effect](volume);
   };
 
   window.EffectController = EffectController;
-})(
-    window.Constants.ImageScale,
-    window.Constants.SliderData,
-    window.Zoom, window.Slider,
-    window.Effect
-);
+})(window.Constants.ImageScale, window.Zoom, window.Slider, window.Effect);
