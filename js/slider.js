@@ -10,83 +10,53 @@
   var effectPin = effectLine.querySelector('.effect-level__pin');
   var effectDepth = effectLine.querySelector('.effect-level__depth');
 
-  var getPosition = function (element) {
-    return element.getBoundingClientRect().left;
+  var getLineRect = function () {
+    return effectLine.getBoundingClientRect();
   };
 
-  var PressOffset = {
-    value: 0,
-    getOffset: function (evt) {
-      this.value = evt.clientX - getPosition(evt.target);
-    }
+  var getShift = function (x) {
+    var rect = getLineRect();
+    return {
+      x: x,
+      offset: x - rect.left,
+      range: rect.width,
+      left: rect.left,
+      right: rect.right,
+    };
   };
 
-  var getMoveOffset = function (moveEvt) {
-    return moveEvt.clientX - PressOffset.value;
+  var getDefaultShift = function () {
+    var width = getLineRect().width;
+    return {
+      offset: width,
+      range: width,
+    };
   };
 
-  var getEffectVolume = function (num) {
-    return Math.round(effectPin.offsetLeft * 100 / num);
+  var canMove = function (shift) {
+    return Math.min(shift.x, shift.offset, shift.left) >= 0
+      && Math.min(shift.x, shift.offset, shift.right) <= shift.range;
   };
 
-  var renderPin = function (value) {
-    effectPin.style.left = value + 'px';
-    effectDepth.style.width = value + 'px';
+  var getVolume = function (shift) {
+    return Math.round(shift.offset * 100 / shift.range);
   };
 
-  var Slider = function (onChange, constrains) {
-    this._onPinMouseDown = this._onPinMouseDown.bind(this);
+  var Slider = function (onChange) {
     this._onPinMouseMove = this._onPinMouseMove.bind(this);
     this._onLineClick = this._onLineClick.bind(this);
+    this._onMouseDown = makeOnMouseDown(this._onPinMouseMove);
 
     this.onChange = onChange;
-    this._constrains = constrains;
-  };
-
-  Slider.prototype._onLineClick = function (evt) {
-    if (this._inMinRange(evt) && this._inMaxRange(evt)) {
-      renderPin(evt.clientX - getPosition(effectLine));
-      this.onChange(getEffectVolume(this._constrains.RANGE));
-    } else if (!this._inMinRange(evt)) {
-      renderPin(this._constrains.Position.MIN);
-    } else if (!this._inMaxRange(evt)) {
-      renderPin(this._constrains.Position.MAX);
-    }
-
-    this.onChange(getEffectVolume(this._constrains.RANGE));
-  };
-
-  Slider.prototype._onPinMouseDown = function (evt) {
-    PressOffset.getOffset(evt);
-  };
-
-  Slider.prototype._onPinMouseMove = function (x, y, moveEvt) {
-    window.requestAnimationFrame(function () {
-      if (this._canDecrease(moveEvt) && this._canIncrease(moveEvt)) {
-        renderPin(effectPin.offsetLeft - x);
-      } else if (!this._canDecrease(moveEvt)) {
-        renderPin(this._constrains.Position.MIN);
-      } else if (!this._canIncrease(moveEvt)) {
-        renderPin(this._constrains.Position.MAX);
-      }
-    }.bind(this));
-
-    this.onChange(getEffectVolume(this._constrains.RANGE));
   };
 
   Slider.prototype.addEventListeners = function () {
-    effectPin.addEventListener(
-        'mousedown',
-        makeOnMouseDown(this._onPinMouseDown, this._onPinMouseMove)
-    );
+    effectPin.addEventListener('mousedown', this._onMouseDown);
     effectLine.addEventListener('click', this._onLineClick);
   };
 
   Slider.prototype.removeEventListeners = function () {
-    effectPin.removeEventListener(
-        'mousedown',
-        makeOnMouseDown(this._onPinMouseDown, this._onPinMouseMove)
-    );
+    effectPin.removeEventListener('mousedown', this._onMouseDown);
     effectLine.removeEventListener('click', this._onLineClick);
   };
 
@@ -98,25 +68,24 @@
     hideElement(effectLevel);
   };
 
-  Slider.prototype._canDecrease = function (moveEvt) {
-    return getMoveOffset(moveEvt) >= getPosition(effectLine);
-  };
-
-  Slider.prototype._canIncrease = function (moveEvt) {
-    return getMoveOffset(moveEvt)
-      <= getPosition(effectLine) + this._constrains.LINE_WIDTH - this._constrains.PIN_WIDTH;
-  };
-
-  Slider.prototype._inMinRange = function (evt) {
-    return evt.clientX >= (getPosition(effectLine) + this._constrains.Position.MIN);
-  };
-
-  Slider.prototype._inMaxRange = function (evt) {
-    return evt.clientX <= (getPosition(effectLine) + this._constrains.Position.MAX);
-  };
-
   Slider.prototype.reset = function () {
-    renderPin(this._constrains.Position.MAX);
+    this._moveX(getDefaultShift());
+  };
+
+  Slider.prototype._moveX = function (shift) {
+    effectPin.style.left = shift.offset + 'px';
+    effectDepth.style.width = shift.offset + 'px';
+    this.onChange(getVolume(shift));
+  };
+
+  Slider.prototype._onLineClick = function (evt) {
+    evt.preventDefault();
+    this._moveX(getShift(evt.clientX));
+  };
+
+  Slider.prototype._onPinMouseMove = function (x) {
+    var shift = getShift(x);
+    return canMove(shift) && this._moveX(shift);
   };
 
   window.Slider = Slider;

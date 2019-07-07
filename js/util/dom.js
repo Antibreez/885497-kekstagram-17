@@ -1,37 +1,18 @@
 'use strict';
 
 (function () {
-  var makeOnMouseDown = function (onDown, onMove, onUp) {
+  var makeOnMouseDown = function (onMoveX) {
     return function (evt) {
       evt.preventDefault();
 
-      var start = {
-        x: evt.clientX,
-        y: evt.clientY
-      };
-
-      onDown(evt);
-
       var onMouseMove = function (moveEvt) {
         moveEvt.preventDefault();
-
-        if (onMove) {
-          onMove(
-              start.x - moveEvt.clientX,
-              start.y - moveEvt.clientY,
-              moveEvt
-          );
-        }
-
-        start.x = moveEvt.clientX;
-        start.y = moveEvt.clientY;
+        onMoveX(moveEvt.clientX);
       };
 
       var onMouseUp = function (upEvt) {
         upEvt.preventDefault();
-
         document.removeEventListener('mousemove', onMouseMove);
-        return onUp && onUp(upEvt);
       };
 
       document.addEventListener('mousemove', onMouseMove);

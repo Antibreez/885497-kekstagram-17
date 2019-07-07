@@ -24,18 +24,14 @@
     scaleDownButton.removeEventListener('click', this._onDownClick);
   };
 
-  Zoom.prototype._onUpClick = function () {
-    if (this._canIncrease()) {
-      scaleInput.value = this._scale += this._constrains.STEP;
-      this.onScale(this._scale);
-    }
+  Zoom.prototype.reset = function () {
+    this._applyScale(this._constrains.MAX);
   };
 
-  Zoom.prototype._onDownClick = function () {
-    if (this._canDecrease()) {
-      scaleInput.value = this._scale -= this._constrains.STEP;
-      this.onScale(this._scale);
-    }
+  Zoom.prototype._applyScale = function (value) {
+    scaleInput.value = value + '%';
+    this._scale = value;
+    this.onScale(value);
   };
 
   Zoom.prototype._canIncrease = function () {
@@ -46,8 +42,14 @@
     return this._constrains.MIN <= this._scale - this._constrains.STEP;
   };
 
-  Zoom.prototype.reset = function () {
-    this.onScale(this._constrains.MAX);
+  Zoom.prototype._onUpClick = function () {
+    return this._canIncrease()
+      && this._applyScale(this._scale + this._constrains.STEP);
+  };
+
+  Zoom.prototype._onDownClick = function () {
+    return this._canDecrease()
+      && this._applyScale(this._scale - this._constrains.STEP);
   };
 
   window.Zoom = Zoom;
