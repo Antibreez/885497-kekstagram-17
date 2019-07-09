@@ -1,6 +1,6 @@
 'use strict';
 
-(function (DOM, Mock, UploadPreview) {
+(function (backend, DOM, UploadPreview) {
   var uploadFileInput = document.querySelector('#upload-file');
   var effectLevelContainer = document.querySelector('.effect-level');
 
@@ -35,6 +35,11 @@
 
   uploadFileInput.addEventListener('change', onFileUploadChange);
 
-  addImages(imagesList, Mock.load(25));
+  var addUsersPictures = function (pictures) {
+    addImages(imagesList, pictures);
+  };
+
+  backend.load(addUsersPictures);
+
   DOM.Element.hide(effectLevelContainer);
-})(window.DOM, window.Mock, window.UploadPreview);
+})(window.backend, window.DOM, window.UploadPreview);
