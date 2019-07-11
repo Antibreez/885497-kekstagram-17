@@ -71,6 +71,17 @@
     addImages(imagesList, images);
   };
 
+  var lastTimeOut;
+
+  var debouncedUpdate = function (images) {
+    if (lastTimeOut) {
+      window.clearTimeout(lastTimeOut);
+    }
+    lastTimeOut = window.setTimeout(function () {
+      updateImages(images);
+    }, 700);
+  };
+
   var clearClass = function () {
     filtersButtons.forEach(function (element) {
       element.classList.remove('img-filters__button--active');
@@ -86,18 +97,18 @@
 
   var onDiscussedClick = function (evt) {
     onButtonClick(evt);
-    updateImages(Pictures.sorted);
+    debouncedUpdate(Pictures.sorted);
   };
 
   var onNewClick = function (evt) {
     onButtonClick(evt);
     Pictures.random = getRandomImages(Pictures.sorted).slice(0, 10);
-    updateImages(Pictures.random);
+    debouncedUpdate(Pictures.random);
   };
 
   var onPopularClick = function (evt) {
     onButtonClick(evt);
-    updateImages(Pictures.default);
+    debouncedUpdate(Pictures.default);
   };
 
   var onSucsess = function (images) {
