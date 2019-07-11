@@ -1,8 +1,15 @@
 'use strict';
 
-(function (backend, DOM, UploadPreview) {
+(function (backend, DOM, UploadPreview, Random) {
   var uploadFileInput = document.querySelector('#upload-file');
   var effectLevelContainer = document.querySelector('.effect-level');
+
+  var imagesFilter = document.querySelector('.img-filters');
+  var filtersForm = imagesFilter.querySelector('.img-filters__form');
+  var filtersButtons = imagesFilter.querySelectorAll('.img-filters__button');
+  var popularButton = filtersForm.querySelector('#filter-popular');
+  var newButton = filtersForm.querySelector('#filter-new');
+  var discussedButton = filtersForm.querySelector('#filter-discussed');
 
   var imagesList = document.querySelector('.pictures');
   var imageTemplate = document.querySelector('#picture')
@@ -35,11 +42,78 @@
 
   uploadFileInput.addEventListener('change', onFileUploadChange);
 
-  var addUsersPictures = function (pictures) {
-    addImages(imagesList, pictures);
+  var Pictures = {
+    default: [],
+    sorted: [],
+    random: []
   };
 
-  backend.load(addUsersPictures);
+  var getRandomImages = function (images) {
+    return images.reduce(function (shuffled, element, index) {
+      shuffled.splice(Random.getNum(0, index), 0, element);
+      return shuffled;
+    }, []);
+  };
+
+  var getCommentsSorting = function (prev, next) {
+    return next.comments.length - prev.comments.length;
+  };
+
+  var removeImages = function (target) {
+    var images = target.querySelectorAll('.picture');
+    images.forEach(function (element) {
+      target.removeChild(element);
+    });
+  };
+
+  var updateImages = function (images) {
+    removeImages(imagesList);
+    addImages(imagesList, images);
+  };
+
+  var clearClass = function () {
+    filtersButtons.forEach(function (element) {
+      element.classList.remove('img-filters__button--active');
+    });
+  };
+
+  var onButtonClick = function (evt) {
+    if (!evt.target.classList.contains('img-filters__button--active')) {
+      clearClass();
+      evt.target.classList.add('img-filters__button--active');
+    }
+  };
+
+  var onDiscussedClick = function (evt) {
+    onButtonClick(evt);
+    updateImages(Pictures.sorted);
+  };
+
+  var onNewClick = function (evt) {
+    onButtonClick(evt);
+    Pictures.random = getRandomImages(Pictures.sorted).slice(0, 10);
+    updateImages(Pictures.random);
+  };
+
+  var onPopularClick = function (evt) {
+    onButtonClick(evt);
+    updateImages(Pictures.default);
+  };
+
+  var onSucsess = function (images) {
+    imagesFilter.classList.remove('img-filters--inactive');
+
+    Pictures.default = images;
+    Pictures.sorted = images.slice().sort(getCommentsSorting);
+
+    popularButton.addEventListener('click', onPopularClick);
+    newButton.addEventListener('click', onNewClick);
+    discussedButton.addEventListener('click', onDiscussedClick);
+
+    addImages(imagesList, images);
+  };
+
+  backend.load(onSucsess);
 
   DOM.Element.hide(effectLevelContainer);
-})(window.backend, window.DOM, window.UploadPreview);
+})(window.backend, window.DOM, window.UploadPreview, window.Random);
