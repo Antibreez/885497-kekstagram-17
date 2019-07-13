@@ -1,9 +1,9 @@
 'use strict';
 
-(function (DOM) {
-  var showElement = DOM.Element.show;
-  var hideElement = DOM.Element.hide;
-  var makeOnMouseDown = DOM.Event.make.onMouseDown;
+(function (DomUtil, EventUtil) {
+  var showElement = DomUtil.show;
+  var hideElement = DomUtil.hide;
+  var makeOnMouseDown = EventUtil.make.onMouseDown;
 
   var effectLevel = document.querySelector('.effect-level');
   var effectLine = effectLevel.querySelector('.effect-level__line');
@@ -89,4 +89,4 @@
   };
 
   window.Slider = Slider;
-})(window.DOM);
+})(window.DomUtil, window.EventUtil);

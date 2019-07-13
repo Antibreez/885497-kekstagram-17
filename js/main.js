@@ -1,6 +1,6 @@
 'use strict';
 
-(function (backend, DOM, UploadPreview, Random) {
+(function (backend, DomUtil, UploadPreview, Random) {
   var uploadFileInput = document.querySelector('#upload-file');
   var effectLevelContainer = document.querySelector('.effect-level');
 
@@ -126,5 +126,5 @@
 
   backend.load(onSucsess);
 
-  DOM.Element.hide(effectLevelContainer);
-})(window.backend, window.DOM, window.UploadPreview, window.Random);
+  DomUtil.hide(effectLevelContainer);
+})(window.backend, window.DomUtil, window.UploadPreview, window.Random);
