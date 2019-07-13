@@ -41,7 +41,7 @@
 
     debounce: function (onDelay, delay) {
       var timeoutId = 0;
-        return function () {
+      return function () {
         var params = arguments;
 
         if (timeoutId > 0) {
@@ -53,7 +53,7 @@
         };
 
         timeoutId = setTimeout(onTimeout, delay || DELAY);
-      }
+      };
     }
   };
 })();
