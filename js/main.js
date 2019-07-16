@@ -1,8 +1,7 @@
 'use strict';
 
-(function (backend, DomUtil, UploadPreview, Random, GalleryController) {
+(function (backend, UploadPreview, Gallery) {
   var uploadFileInput = document.querySelector('#upload-file');
-  var effectLevelContainer = document.querySelector('.effect-level');
 
   var uploadPreview = new UploadPreview();
 
@@ -10,21 +9,17 @@
     uploadPreview.open();
   };
 
-  var onSucsess = function (images) {
-    GalleryController.onLoad(images);
-    GalleryController.makeCollection(images);
-    GalleryController.addEventListener();
+  var gallery = new Gallery();
+
+  var ImagesLoad = function (images) {
+    gallery.add(images);
   };
 
-  backend.load(onSucsess);
-
-  DomUtil.hide(effectLevelContainer);
+  backend.load(ImagesLoad);
 
   uploadFileInput.addEventListener('change', onFileUploadChange);
 })(
     window.backend,
-    window.DomUtil,
     window.UploadPreview,
-    window.Random,
-    window.GalleryController
+    window.Gallery
 );

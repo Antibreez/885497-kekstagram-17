@@ -13,14 +13,9 @@
     return array[Math.floor(Math.random() * array.length)];
   };
 
-  var getLengthSorting = function (prev, next) {
-    return next.comments.length - prev.comments.length;
-  };
-
   window.Random = {
     getNum: getRandomNumber,
     getItem: getRandomItem,
     getSorting: getRandomSorting,
-    getLengthSorting: getLengthSorting
   };
 })();

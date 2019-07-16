@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var DELAY = 700;
+  var DEBOUNCE_DELAY = 500;
 
   var makeOnMouseDown = function (onMoveX) {
     return function (evt) {
@@ -31,6 +31,14 @@
       return evt.key === 'Enter';
     },
 
+    isLeftKey: function (evt) {
+      return evt.key === 'Left' || evt.key === 'ArrowLeft';
+    },
+
+    isRightKey: function (evt) {
+      return evt.key === 'Right' || evt.key === 'ArrowRight';
+    },
+
     isNotTarget: function (evt, element) {
       return evt.target !== element;
     },
@@ -52,7 +60,7 @@
           onDelay.apply(null, params);
         };
 
-        timeoutId = setTimeout(onTimeout, delay || DELAY);
+        timeoutId = setTimeout(onTimeout, delay || DEBOUNCE_DELAY);
       };
     }
   };
