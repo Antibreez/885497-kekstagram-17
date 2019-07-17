@@ -1,6 +1,6 @@
 'use strict';
 
-(function (EventUtil, FilterBar, Filter) {
+(function (EventUtil, FilterBar, Filter, Review) {
   var imagesList = document.querySelector('.pictures');
   var imageTemplate = document.querySelector('#picture')
     .content
@@ -43,6 +43,7 @@
     this._urlToImages = {};
     this._onChange = this._onChange.bind(this);
     this._filterBar = new FilterBar(this._onChange);
+    this._review = new Review();
   };
 
   Gallery.prototype.add = function (images) {
@@ -54,6 +55,8 @@
 
     this._filterBar.activate();
     addImages(this._urlToImages, Filter.popular(this._images));
+
+    this._review.open(this._images[0]);
   };
 
   Gallery.prototype._makeImageDict = function (images) {
@@ -71,4 +74,4 @@
 
   window.Gallery = Gallery;
 
-})(window.EventUtil, window.FilterBar, window.Filter);
+})(window.EventUtil, window.FilterBar, window.Filter, window.Review);
