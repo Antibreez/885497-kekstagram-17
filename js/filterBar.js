@@ -29,6 +29,12 @@
     this._onFilterChange = this._onFilterChange.bind(this);
   };
 
+  FilterBar.prototype.activate = function () {
+    this._addEventListeners();
+    activateFilter();
+    selectFilter('popular');
+  };
+
   FilterBar.prototype._onFilterChange = function (evt) {
     var id = evt.target.id.slice(7);
     selectFilter(id);
@@ -37,12 +43,6 @@
 
   FilterBar.prototype._addEventListeners = function () {
     filterForm.addEventListener('click', this._onFilterChange);
-  };
-
-  FilterBar.prototype.activate = function () {
-    this._addEventListeners();
-    activateFilter();
-    selectFilter('popular');
   };
 
   window.FilterBar = FilterBar;

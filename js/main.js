@@ -11,11 +11,11 @@
 
   var gallery = new Gallery();
 
-  var ImagesLoad = function (images) {
+  var onImagesLoad = function (images) {
     gallery.add(images);
   };
 
-  backend.load(ImagesLoad);
+  backend.load(onImagesLoad);
 
   uploadFileInput.addEventListener('change', onFileUploadChange);
 })(

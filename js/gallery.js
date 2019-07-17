@@ -45,6 +45,17 @@
     this._filterBar = new FilterBar(this._onChange);
   };
 
+  Gallery.prototype.add = function (images) {
+    images.forEach(function (image) {
+      this._images.push(image);
+    }.bind(this));
+
+    this._makeImageDict(images);
+
+    this._filterBar.activate();
+    addImages(this._urlToImages, Filter.popular(this._images));
+  };
+
   Gallery.prototype._makeImageDict = function (images) {
     images.forEach(function (image) {
       this._urlToImages[image.url] = image;
@@ -56,17 +67,6 @@
         this._urlToImages,
         Filter[filter](this._images)
     );
-  };
-
-  Gallery.prototype.add = function (images) {
-    images.forEach(function (image) {
-      this._images.push(image);
-    }.bind(this));
-
-    this._makeImageDict(images);
-
-    this._filterBar.activate();
-    addImages(this._urlToImages, Filter.popular(this._images));
   };
 
   window.Gallery = Gallery;
