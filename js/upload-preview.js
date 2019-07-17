@@ -1,6 +1,6 @@
 'use strict';
 
-(function (DOM, EffectController) {
+(function (DomUtil, EventUtil, EffectController) {
   var upload = document.querySelector('.img-upload__overlay');
   var cancelButton = upload.querySelector('#upload-cancel');
 
@@ -16,24 +16,24 @@
   };
 
   UploadPreview.prototype.open = function () {
-    DOM.Element.show(upload);
+    DomUtil.show(upload);
     this._effectController.purge();
     this._addEventListeners();
   };
 
   UploadPreview.prototype.close = function () {
-    DOM.Element.hide(upload);
+    DomUtil.hide(upload);
     this._removeEventListeners();
   };
 
   UploadPreview.prototype._onEscPress = function (evt) {
-    return DOM.Event.isEscapeKey(evt)
-      && DOM.Event.isNotTarget(evt, descInput)
+    return EventUtil.isEscapeKey(evt)
+      && EventUtil.isNotTarget(evt, descInput)
       && this.close();
   };
 
   UploadPreview.prototype._onEnterPress = function (evt) {
-    return DOM.Event.isEnterKey(evt) && this.close();
+    return EventUtil.isEnterKey(evt) && this.close();
   };
 
   UploadPreview.prototype._addEventListeners = function () {
@@ -51,4 +51,4 @@
   };
 
   window.UploadPreview = UploadPreview;
-})(window.DOM, window.EffectController);
+})(window.DomUtil, window.EventUtil, window.EffectController);

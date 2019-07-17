@@ -16,6 +16,6 @@
   window.Random = {
     getNum: getRandomNumber,
     getItem: getRandomItem,
-    getSorting: getRandomSorting
+    getSorting: getRandomSorting,
   };
 })();

@@ -39,7 +39,7 @@
     return xhr;
   };
 
-  var removeMessage = function (element) {
+  var removeElement = function (element) {
     element.remove();
   };
 
@@ -53,7 +53,7 @@
 
     node.textContent = message;
     document.body.insertAdjacentElement('afterbegin', node);
-    window.setTimeout(removeMessage, 2000, node);
+    window.setTimeout(removeElement, 2000, node);
   };
 
   window.backend = {
