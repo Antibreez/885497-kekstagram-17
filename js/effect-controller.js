@@ -65,4 +65,9 @@
   };
 
   window.EffectController = EffectController;
-})(window.Constants.ImageScale, window.Zoom, window.Slider, window.Effect);
+})(
+    window.Constants.ImageScale,
+    window.Zoom,
+    window.Slider,
+    window.Effect
+);

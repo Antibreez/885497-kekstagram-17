@@ -5,38 +5,35 @@
   var bigImage = imageContainer.querySelector('.big-picture__img img');
   var likes = imageContainer.querySelector('.likes-count');
   var commentsNumber = imageContainer.querySelector('.comments-count');
-  var commentsList = imageContainer.querySelector('.social__comments');
-  var commentItem = commentsList.querySelector('.social__comment');
+  var commentList = imageContainer.querySelector('.social__comments');
+  var commentItem = commentList.querySelector('.social__comment');
   var description = imageContainer.querySelector('.social__caption');
 
-  var removeComments = function () {
-    var comments = commentsList.querySelectorAll('.social__comment');
-
-    comments.forEach(function (element) {
-      commentsList.removeChild(element);
-    });
+  var removeComment = function (comment) {
+    commentList.removeChild(comment);
   };
 
-  var makeComment = function (comment) {
+  var getAvatarSrc = function () {
+    return 'img/avatar-' + Random.getNum(1, 6) + '.svg';
+  };
+
+  var renderComment = function (comment) {
     var item = commentItem.cloneNode(true);
-    item.querySelector('.social__picture')
-      .src = 'img/avatar-' + Random.getNum(1, 6) + '.svg';
-    item.querySelector('.social__text')
-      .textContent = comment.message;
+    item.querySelector('.social__picture').src = getAvatarSrc();
+    item.querySelector('.social__text').textContent = comment.message;
 
     return item;
   };
 
   var fillComments = function (image) {
-    removeComments();
-
     var fragment = document.createDocumentFragment();
 
     image.comments.forEach(function (comment) {
-      fragment.appendChild(makeComment(comment));
+      fragment.appendChild(renderComment(comment));
     });
 
-    commentsList.appendChild(fragment);
+    commentList.querySelectorAll('.social__comment').forEach(removeComment);
+    commentList.appendChild(fragment);
   };
 
   var Review = function () {};
@@ -47,7 +44,6 @@
   };
 
   Review.prototype._fillImageInfo = function (currentImage) {
-
     fillComments(currentImage);
     bigImage.src = currentImage.url;
     likes.textContent = currentImage.likes;

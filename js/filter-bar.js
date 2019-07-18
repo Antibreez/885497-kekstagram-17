@@ -29,20 +29,28 @@
     this._onFilterChange = this._onFilterChange.bind(this);
   };
 
-  FilterBar.prototype.activate = function () {
+  FilterBar.prototype.show = function () {
     this._addEventListeners();
     activateFilter();
     selectFilter('popular');
+  };
+
+  FilterBar.prototype.hide = function () {
+    this._removeEventListeners();
+  };
+
+  FilterBar.prototype._addEventListeners = function () {
+    filterForm.addEventListener('click', this._onFilterChange);
+  };
+
+  FilterBar.prototype._removeEventListeners = function () {
+    filterForm.removeEventListener('click', this._onFilterChange);
   };
 
   FilterBar.prototype._onFilterChange = function (evt) {
     var id = evt.target.id.slice(7);
     selectFilter(id);
     this.onChange(id);
-  };
-
-  FilterBar.prototype._addEventListeners = function () {
-    filterForm.addEventListener('click', this._onFilterChange);
   };
 
   window.FilterBar = FilterBar;
