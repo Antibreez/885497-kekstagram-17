@@ -4,19 +4,17 @@
   var uploadFileInput = document.querySelector('#upload-file');
 
   var uploadPreview = new UploadPreview();
+  var gallery = new Gallery();
 
   var onFileUploadChange = function () {
     uploadPreview.open();
   };
 
-  var gallery = new Gallery();
-
-  var ImagesLoad = function (images) {
+  var onImagesLoad = function (images) {
     gallery.add(images);
   };
 
-  backend.load(ImagesLoad);
-
+  backend.load(onImagesLoad);
   uploadFileInput.addEventListener('change', onFileUploadChange);
 })(
     window.backend,
