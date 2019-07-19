@@ -1,17 +1,27 @@
 'use strict';
 
 (function () {
-  var Url = {
+  var ReqUrl = {
     GET: 'https://js.dump.academy/kekstagram/data',
     POST: 'https://js.dump.academy/kekstagram'
   };
 
-  var Method = {
+  var ReqMethod = {
     GET: 'GET',
     POST: 'POST'
   };
 
+  var ReqStatus = {
+    OK: 200,
+    MULTIPLE_CHOICES: 300,
+  };
+
   var TIMEOUT = 10000;
+
+  var isErrorStatus = function (xhr) {
+    return xhr.status < ReqStatus.OK
+      || xhr.status > ReqStatus.MULTIPLE_CHOICES;
+  };
 
   var createRequest = function (onLoad, onError) {
     var xhr = new XMLHttpRequest();
@@ -20,7 +30,7 @@
     xhr.responseType = 'json';
 
     xhr.addEventListener('load', function () {
-      if (xhr.status < 200 || xhr.status > 300) {
+      if (isErrorStatus(xhr)) {
         onError('Данные не загрузились. Причина: ' + xhr.status + ' ' + xhr.statusText);
         return;
       }
@@ -59,13 +69,13 @@
   window.backend = {
     load: function (onLoad, onError) {
       var req = createRequest(onLoad, onError || onAnyError);
-      req.open(Method.GET, Url.GET);
+      req.open(ReqMethod.GET, ReqUrl.GET);
       req.send();
     },
 
     save: function (data, onLoad, onError) {
       var req = createRequest(onLoad, onError);
-      req.open(Method.POST, Url.POST);
+      req.open(ReqMethod.POST, ReqUrl.POST);
       req.send(data);
     }
   };

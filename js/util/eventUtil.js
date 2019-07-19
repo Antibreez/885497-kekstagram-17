@@ -3,13 +3,14 @@
 (function () {
   var DEBOUNCE_DELAY = 500;
 
-  var makeOnMouseDown = function (onMoveX) {
+  var makeDragStart  = function (onStartX, onMoveX) {
     return function (evt) {
       evt.preventDefault();
+      var startX = onStartX(evt) || 0;
 
       var onMouseMove = function (moveEvt) {
         moveEvt.preventDefault();
-        onMoveX(moveEvt.clientX);
+        onMoveX(startX + moveEvt.clientX - evt.clientX);
       };
 
       var onMouseUp = function (upEvt) {
@@ -44,7 +45,7 @@
     },
 
     make: {
-      onMouseDown: makeOnMouseDown
+      makeDragStart: makeDragStart
     },
 
     debounce: function (onDelay, delay) {
