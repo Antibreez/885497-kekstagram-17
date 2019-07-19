@@ -7,7 +7,13 @@
     MAX: 100,
   };
 
+  var EffectLineRect = {
+    LEFT: 0,
+    RIGHT: 453,
+  };
+
   window.Constants = {
     ImageScale: ImageScale,
+    EffectLineRect: EffectLineRect
   };
 })();
