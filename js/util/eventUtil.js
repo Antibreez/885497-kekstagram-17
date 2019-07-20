@@ -3,7 +3,7 @@
 (function () {
   var DEBOUNCE_DELAY = 500;
 
-  var makeDragStart  = function (onStartX, onMoveX) {
+  var makeDragStart = function (onStartX, onMoveX) {
     return function (evt) {
       evt.preventDefault();
       var startX = onStartX(evt) || 0;
