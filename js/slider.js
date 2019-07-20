@@ -71,4 +71,8 @@
   };
 
   window.Slider = Slider;
-})(window.Constants.EffectLineRect, window.DomUtil, window.EventUtil);
+})(
+    window.Constants.EffectLineRect,
+    window.DomUtil,
+    window.EventUtil
+);
