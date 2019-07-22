@@ -1,17 +1,20 @@
 'use strict';
 
-(function (Random, DomUtil) {
+(function (
+    Random,
+    showElement,
+    hideElement,
+    isEscapeKey,
+    isEnterKey
+) {
   var imageContainer = document.querySelector('.big-picture');
   var bigImage = imageContainer.querySelector('.big-picture__img img');
-  var likes = imageContainer.querySelector('.likes-count');
-  var commentsNumber = imageContainer.querySelector('.comments-count');
+  var likeCount = imageContainer.querySelector('.likes-count');
+  var commentCount = imageContainer.querySelector('.comments-count');
   var commentList = imageContainer.querySelector('.social__comments');
   var commentItem = commentList.querySelector('.social__comment');
   var description = imageContainer.querySelector('.social__caption');
-
-  var removeComment = function (comment) {
-    commentList.removeChild(comment);
-  };
+  var cancelButton = imageContainer.querySelector('.cancel');
 
   var getAvatarSrc = function () {
     return 'img/avatar-' + Random.getNum(1, 6) + '.svg';
@@ -25,10 +28,13 @@
     return item;
   };
 
-  var fillComments = function (image) {
-    var fragment = document.createDocumentFragment();
+  var removeComment = function (comment) {
+    commentList.removeChild(comment);
+  };
 
-    image.comments.forEach(function (comment) {
+  var setComments = function (comments) {
+    var fragment = document.createDocumentFragment();
+    comments.forEach(function (comment) {
       fragment.appendChild(renderComment(comment));
     });
 
@@ -36,20 +42,56 @@
     commentList.appendChild(fragment);
   };
 
-  var Review = function () {};
-
-  Review.prototype.open = function (currentImage) {
-    DomUtil.show(imageContainer);
-    this._fillImageInfo(currentImage);
+  var Review = function () {
+    this._close = this._close.bind(this);
+    this._onEscPress = this._onEscPress.bind(this);
+    this._onEnterPress = this._onEnterPress.bind(this);
   };
 
-  Review.prototype._fillImageInfo = function (currentImage) {
-    fillComments(currentImage);
-    bigImage.src = currentImage.url;
-    likes.textContent = currentImage.likes;
-    commentsNumber.textContent = currentImage.comments.length;
-    description.textContent = currentImage.description;
+  Review.prototype.show = function (image) {
+    this._addEventListeners();
+    this._update(image);
+    showElement(imageContainer);
+  };
+
+  Review.prototype._close = function () {
+    hideElement(imageContainer);
+    this._removeEventListeners();
+  };
+
+  Review.prototype._update = function (image) {
+    bigImage.src = image.url;
+    likeCount.textContent = image.likes;
+    description.textContent = image.description;
+    commentCount.textContent = image.comments.length;
+    setComments(image.comments);
+  };
+
+  Review.prototype._addEventListeners = function () {
+    cancelButton.addEventListener('click', this._close);
+    cancelButton.addEventListener('keydown', this._onEnterPress);
+    document.addEventListener('keydown', this._onEscPress);
+  };
+
+  Review.prototype._removeEventListeners = function () {
+    cancelButton.removeEventListener('click', this._close);
+    cancelButton.removeEventListener('keydown', this._onEnterPress);
+    document.removeEventListener('keydown', this._onEscPress);
+  };
+
+  Review.prototype._onEscPress = function (evt) {
+    return isEscapeKey(evt) && this._close();
+  };
+
+  Review.prototype._onEnterPress = function (evt) {
+    return isEnterKey(evt) && this._close();
   };
 
   window.Review = Review;
-})(window.Random, window.DomUtil);
+})(
+    window.Random,
+    window.DomUtil.show,
+    window.DomUtil.hide,
+    window.EventUtil.isEscapeKey,
+    window.EventUtil.isEnterKey
+);
