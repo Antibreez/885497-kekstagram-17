@@ -1,11 +1,11 @@
 'use strict';
 
 (function (
-  debounce,
-  isEnterKey,
-  FilterBar,
-  Filter,
-  Review,
+    debounce,
+    isEnterKey,
+    FilterBar,
+    Filter,
+    Review
 ) {
   var imageList = document.querySelector('.pictures');
   var imageTemplate = document.querySelector('#picture').content.querySelector('.picture');
@@ -83,9 +83,9 @@
 
   window.Gallery = Gallery;
 })(
-  window.EventUtil.debounce,
-  window.EventUtil.isEnterKey,
-  window.FilterBar,
-  window.Filter,
-  window.Review
+    window.EventUtil.debounce,
+    window.EventUtil.isEnterKey,
+    window.FilterBar,
+    window.Filter,
+    window.Review
 );
