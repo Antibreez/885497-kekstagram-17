@@ -1,11 +1,11 @@
 'use strict';
 
 (function (
-  Random,
-  showElement,
-  hideElement,
-  isEscapeKey,
-  isEnterKey,
+    Random,
+    showElement,
+    hideElement,
+    isEscapeKey,
+    isEnterKey
 ) {
   var imageContainer = document.querySelector('.big-picture');
   var bigImage = imageContainer.querySelector('.big-picture__img img');
@@ -89,9 +89,9 @@
 
   window.Review = Review;
 })(
-  window.Random,
-  window.DomUtil.show,
-  window.DomUtil.hide,
-  window.EventUtil.isEscapeKey,
-  window.EventUtil.isEnterKey,
+    window.Random,
+    window.DomUtil.show,
+    window.DomUtil.hide,
+    window.EventUtil.isEscapeKey,
+    window.EventUtil.isEnterKey
 );
