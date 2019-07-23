@@ -3,6 +3,7 @@
 (function (
     debounce,
     isEnterKey,
+    makeFragmentRender,
     FilterBar,
     Filter,
     Review
@@ -24,14 +25,10 @@
     imageList.removeChild(image);
   };
 
+  var getImageFragment = makeFragmentRender(renderImage);
   var setImages = function (images) {
-    var fragment = document.createDocumentFragment();
-    images.forEach(function (image, index) {
-      fragment.appendChild(renderImage(image, index));
-    });
-
     imageList.querySelectorAll('.picture').forEach(removeImage);
-    imageList.appendChild(fragment);
+    imageList.appendChild(getImageFragment(images));
   };
 
   var isPicture = function (element) {
@@ -56,7 +53,7 @@
     setImages(this._images);
   };
 
-  Gallery.prototype.preview = function (id) {
+  Gallery.prototype._preview = function (id) {
     this._review.show(this._images[id]);
   };
 
@@ -72,19 +69,20 @@
   Gallery.prototype._onImagesClick = function (evt) {
     var element = evt.target.parentElement;
     return isPicture(element)
-      && this.preview(element.dataset.id);
+      && this._preview(element.dataset.id);
   };
 
   Gallery.prototype._onImageEnterPress = function (evt) {
     return isEnterKey(evt)
       && isPicture(evt.target)
-      && this.preview(evt.target.dataset.id);
+      && this._preview(evt.target.dataset.id);
   };
 
   window.Gallery = Gallery;
 })(
     window.EventUtil.debounce,
     window.EventUtil.isEnterKey,
+    window.DomUtil.makeFragmentRender,
     window.FilterBar,
     window.Filter,
     window.Review
