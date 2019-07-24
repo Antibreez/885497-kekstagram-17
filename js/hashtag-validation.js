@@ -2,74 +2,82 @@
 
 (function (HashtagConstrain) {
   var ValidationMessage = {
-    NO_ERRORS: 'none',
+    NO_ERRORS: '',
     NO_HASH: 'Хеш-тег должен начинаться с символа #(решётка)',
     TOO_SHORT: 'Хеш-тег не может состоять только из одной решётки',
-    NO_SPACE: 'Хеш-теги должны разделяться пробелом',
+    EXTRA_HASH: 'Хеш-теги должны разделяться пробелом',
     NOT_UNIQUE: 'Один и тот же хэш-тег не может быть использован дважды',
     TOO_MANY: 'Допускается указывать не более пяти хеш-тегов',
     TOO_LONG: 'Максимальная длина одного хэш-тега 20 символов'
   };
 
-  var removeEmptyValue = function (hashtag) {
-    return hashtag !== '';
+  var emptyStringFilter = function (str) {
+    return str.length > 0;
   };
 
-  var makeToLowerCase = function (hashtag) {
-    return hashtag.toLowerCase();
+  var getSeparateTags = function (str) {
+    return str
+      .toLowerCase()
+      .replace(/,/g, '')
+      .split(' ')
+      .filter(emptyStringFilter);
   };
 
-  var getHashtags = function (value) {
-    return value.split(' ').filter(removeEmptyValue).map(makeToLowerCase);
+  var hasNoHash = function (tag) {
+    return tag[0] !== '#';
   };
 
-  var hasNoHash = function (hashtag) {
-    return hashtag[0] !== '#';
+  var isTooShort = function (tag) {
+    return tag.length === 1;
   };
 
-  var isToShort = function (hashtag) {
-    return hashtag.length === 1;
+  var hasLeadingSymbol = function (tag) {
+    return tag.lastIndexOf('#') === 0;
   };
 
-  var hasNoSpace = function (hashtag) {
-    return hashtag.slice(1, hashtag.length).indexOf('#') !== -1;
-  };
-
-  var isNotUnique = function (hashtags) {
-    var obj = {};
-
-    hashtags.forEach(function (hashtag) {
-      obj[hashtag] = true;
+  var isNotUnique = function (tags) {
+    tags.forEach(function (tag, idx) {
+      return tags.indexOf(tag, idx + 1) > 0;
     });
-
-    return hashtags.length !== Object.keys(obj).length;
   };
 
-  var isTooLong = function (hashtag) {
-    return hashtag.length > HashtagConstrain.MAX_LENGTH;
+  var isTooLong = function (tag) {
+    return tag.length > HashtagConstrain.MAX_LENGTH;
   };
 
-  var getValidationMessage = function (hashtagInput) {
-    var hashtags = getHashtags(hashtagInput.value);
+  var getMessage = function (value) {
+    var tags = getSeparateTags(value);
 
-    if (hashtags.some(hasNoHash)) {
-      return ValidationMessage.NO_HASH;
-    } else if (hashtags.some(isToShort)) {
-      return ValidationMessage.TOO_SHORT;
-    } else if (hashtags.some(hasNoSpace)) {
-      return ValidationMessage.NO_SPACE;
-    } else if (isNotUnique(hashtags)) {
-      return ValidationMessage.NOT_UNIQUE;
-    } else if (hashtags.length > HashtagConstrain.MAX_NUMBER) {
-      return ValidationMessage.TOO_MANY;
-    } else if (hashtags.some(isTooLong)) {
-      return ValidationMessage.TOO_LONG;
-    } else {
-      return ValidationMessage.NO_ERRORS;
+    for (var i = 0; i < tags.length; i++) {
+      if (hasNoHash(tags[i])) {
+        return ValidationMessage.NO_HASH;
+      }
+
+      if (isTooShort(tags[i])) {
+        return ValidationMessage.TOO_SHORT;
+      }
+
+      if (!hasLeadingSymbol(tags[i])) {
+        return ValidationMessage.EXTRA_HASH;
+      }
+
+      if (isTooLong(tags[i])) {
+        return ValidationMessage.TOO_LONG;
+      }
     }
+
+    if (tags.length > HashtagConstrain.MAX_NUMBER) {
+      return ValidationMessage.TOO_MANY;
+    }
+
+    if (isNotUnique(tags)) {
+      return ValidationMessage.NOT_UNIQUE;
+    }
+
+    return ValidationMessage.NO_ERRORS;
   };
 
   window.HashtagValidation = {
-    getMessage: getValidationMessage
+    getMessage: getMessage
   };
 })(window.Constants.HashtagConstrain);

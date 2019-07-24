@@ -5,7 +5,7 @@
     DomUtil,
     EventUtil,
     EffectController,
-    HashtagValidation
+    validateHashtags
 ) {
   var upload = document.querySelector('.img-upload__overlay');
   var cancelButton = upload.querySelector('#upload-cancel');
@@ -54,14 +54,13 @@
 
   UploadPreview.prototype._onSubmit = function (evt) {
     evt.preventDefault();
-    var message = HashtagValidation.getMessage(hashtagInput);
-    var close = this.close;
+    var errorMessage = validateHashtags(hashtagInput.value);
 
-    if (message === 'none') {
-      backend.save(new FormData(form), close);
-    } else {
-      hashtagInput.setCustomValidity(message);
+    if (errorMessage.length === 0) {
+      backend.save(new FormData(form), this.close);
     }
+
+    hashtagInput.setCustomValidity(errorMessage);
 
     hashtagInput.reportValidity();
   };
@@ -90,5 +89,5 @@
     window.DomUtil,
     window.EventUtil,
     window.EffectController,
-    window.HashtagValidation
+    window.HashtagValidation.getMessage
 );
