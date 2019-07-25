@@ -4,6 +4,7 @@
     Random,
     showElement,
     hideElement,
+    makeFragmentRender,
     isEscapeKey,
     isEnterKey
 ) {
@@ -32,14 +33,10 @@
     commentList.removeChild(comment);
   };
 
+  var getCommentFragment = makeFragmentRender(renderComment);
   var setComments = function (comments) {
-    var fragment = document.createDocumentFragment();
-    comments.forEach(function (comment) {
-      fragment.appendChild(renderComment(comment));
-    });
-
     commentList.querySelectorAll('.social__comment').forEach(removeComment);
-    commentList.appendChild(fragment);
+    commentList.appendChild(getCommentFragment(comments));
   };
 
   var Review = function () {
@@ -92,6 +89,7 @@
     window.Random,
     window.DomUtil.show,
     window.DomUtil.hide,
+    window.DomUtil.makeFragmentRender,
     window.EventUtil.isEscapeKey,
     window.EventUtil.isEnterKey
 );
