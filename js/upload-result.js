@@ -73,7 +73,7 @@
     document.removeEventListener('keydown', this._onEscPress(resultName));
 
     getCloseButtons(resultName).forEach(function (button) {
-      button.removeEventListener('click', this._close);
+      button.removeEventListener('click', this._onCloseClick(resultName));
     }.bind(this));
 
     document.removeEventListener('click', this._onOuterClick(resultName));
