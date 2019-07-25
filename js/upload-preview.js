@@ -32,8 +32,7 @@
 
   UploadPreview.prototype.close = function () {
     DomUtil.hide(upload);
-    DomUtil.clear(hashtagInput);
-    DomUtil.clear(descInput);
+    DomUtil.clear(hashtagInput, descInput);
     this._removeEventListeners();
   };
 
@@ -54,14 +53,13 @@
 
   UploadPreview.prototype._onSubmit = function (evt) {
     evt.preventDefault();
-    var errorMessage = validateHashtags(hashtagInput.value);
 
+    var errorMessage = validateHashtags(hashtagInput.value);
     if (errorMessage.length === 0) {
       backend.save(new FormData(form), this.close);
     }
 
     hashtagInput.setCustomValidity(errorMessage);
-
     hashtagInput.reportValidity();
   };
 

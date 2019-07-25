@@ -31,14 +31,8 @@
     return tag.length === 1;
   };
 
-  var hasLeadingSymbol = function (tag) {
-    return tag.lastIndexOf('#') === 0;
-  };
-
-  var isNotUnique = function (tags) {
-    tags.forEach(function (tag, idx) {
-      return tags.indexOf(tag, idx + 1) > 0;
-    });
+  var hasManyHashSymbols = function (tag) {
+    return tag.lastIndexOf('#') > 0;
   };
 
   var isTooLong = function (tag) {
@@ -48,30 +42,32 @@
   var getMessage = function (value) {
     var tags = getSeparateTags(value);
 
-    for (var i = 0; i < tags.length; i++) {
-      if (hasNoHash(tags[i])) {
-        return ValidationMessage.NO_HASH;
-      }
-
-      if (isTooShort(tags[i])) {
-        return ValidationMessage.TOO_SHORT;
-      }
-
-      if (!hasLeadingSymbol(tags[i])) {
-        return ValidationMessage.EXTRA_HASH;
-      }
-
-      if (isTooLong(tags[i])) {
-        return ValidationMessage.TOO_LONG;
-      }
-    }
-
     if (tags.length > HashtagConstrain.MAX_NUMBER) {
       return ValidationMessage.TOO_MANY;
     }
 
-    if (isNotUnique(tags)) {
-      return ValidationMessage.NOT_UNIQUE;
+    for (var i = 0; i < tags.length; i++) {
+      var tag = tags[i];
+
+      if (hasNoHash(tag)) {
+        return ValidationMessage.NO_HASH;
+      }
+
+      if (isTooShort(tag)) {
+        return ValidationMessage.TOO_SHORT;
+      }
+
+      if (hasManyHashSymbols(tag)) {
+        return ValidationMessage.EXTRA_HASH;
+      }
+
+      if (tags.indexOf(tag, i + 1) > 0) {
+        return ValidationMessage.NOT_UNIQUE;
+      }
+
+      if (isTooLong(tag)) {
+        return ValidationMessage.TOO_LONG;
+      }
     }
 
     return ValidationMessage.NO_ERRORS;

@@ -1,6 +1,12 @@
 'use strict';
 
 (function () {
+  var forEach = Array.prototype.forEach;
+
+  var clearInput = function (input) {
+    input.value = '';
+  };
+
   window.DomUtil = {
     show: function (element) {
       element.classList.remove('hidden');
@@ -10,8 +16,8 @@
       element.classList.add('hidden');
     },
 
-    clear: function (input) {
-      input.value = '';
+    clear: function () {
+      forEach.call(arguments, clearInput);
     },
 
     makeFragmentRender: function (render) {
