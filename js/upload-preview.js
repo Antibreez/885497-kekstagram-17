@@ -5,7 +5,8 @@
     DomUtil,
     EventUtil,
     EffectController,
-    validateHashtags
+    validateHashtags,
+    UploadResult
 ) {
   var upload = document.querySelector('.img-upload__overlay');
   var cancelButton = upload.querySelector('#upload-cancel');
@@ -20,8 +21,11 @@
     this._onEscPress = this._onEscPress.bind(this);
     this._onEnterPress = this._onEnterPress.bind(this);
     this._onSubmit = this._onSubmit.bind(this);
+    this._onSuccess = this._onSuccess.bind(this);
+    this._onError = this._onError.bind(this);
 
     this._effectController = new EffectController();
+    this._uploadResult = new UploadResult();
   };
 
   UploadPreview.prototype.open = function () {
@@ -51,12 +55,22 @@
     hashtagInput.setCustomValidity('');
   };
 
+  UploadPreview.prototype._onSuccess = function () {
+    this.close();
+    this._uploadResult.openSuccess();
+  };
+
+  UploadPreview.prototype._onError = function () {
+    this.close();
+    this._uploadResult.openError();
+  };
+
   UploadPreview.prototype._onSubmit = function (evt) {
     evt.preventDefault();
 
     var errorMessage = validateHashtags(hashtagInput.value);
     if (errorMessage.length === 0) {
-      backend.save(new FormData(form), this.close);
+      backend.save(new FormData(form), this._onSuccess, this._onError);
     }
 
     hashtagInput.setCustomValidity(errorMessage);
@@ -87,5 +101,6 @@
     window.DomUtil,
     window.EventUtil,
     window.EffectController,
-    window.HashtagValidation.getMessage
+    window.HashtagValidation.getMessage,
+    window.UploadResult
 );
