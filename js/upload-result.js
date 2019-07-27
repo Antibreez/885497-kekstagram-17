@@ -13,70 +13,85 @@
     main.removeChild(main.lastChild);
   };
 
-  var getCloseButtons = function (resultName) {
-    return main.querySelectorAll('.' + resultName + '__button');
-  };
-
-  var UploadResult = function () {
-    this._close = this._close.bind(this);
+  var UploadResult = function (onSubmit) {
     this._onEscPress = this._onEscPress.bind(this);
-    this._onCloseClick = this._onCloseClick.bind(this);
     this._onOuterClick = this._onOuterClick.bind(this);
+    this._onTryAgainClick = this._onTryAgainClick.bind(this);
+    this._hide = this._hide.bind(this);
+    this._onSubmit = onSubmit;
+    this._isSuccess = true;
   };
 
-  UploadResult.prototype.openSuccess = function () {
-    setUploadResult(successTemplate);
-    this._addEventListeners('success');
+  UploadResult.prototype.onSuccess = function () {
+    this._show(successTemplate);
+    this._addEventListeners();
+    this._addSuccessEventListeners();
   };
 
-  UploadResult.prototype.openError = function () {
-    setUploadResult(errorTemplate);
-    this._addEventListeners('error');
+  UploadResult.prototype.onError = function () {
+    this._show(errorTemplate);
+    this._addEventListeners();
+    this._addErrorEventListeners();
+    this._isSuccess = false;
   };
 
-  UploadResult.prototype._close = function (resultName) {
+  UploadResult.prototype._show = function (template) {
+    setUploadResult(template);
+  };
+
+  UploadResult.prototype._hide = function () {
     removeUploadResult();
-    this._removeEventListeners(resultName);
+    this._removeEventListeners();
   };
 
-  UploadResult.prototype._onOuterClick = function (resultName) {
-    return function (evt) {
-      return evt.target.className === resultName
-        && this._close(resultName);
-    }.bind(this);
+  UploadResult.prototype._addEventListeners = function () {
+    document.addEventListener('keydown', this._onEscPress);
+    document.addEventListener('click', this._onOuterClick);
   };
 
-  UploadResult.prototype._onEscPress = function (resultName) {
-    return function (evt) {
-      return EventUtil.isEscapeKey(evt)
-      && this._close(resultName);
-    }.bind(this);
+  UploadResult.prototype._addSuccessEventListeners = function () {
+    this._successButton = main.querySelector('.success__button');
+    this._successButton.addEventListener('click', this._hide);
   };
 
-  UploadResult.prototype._onCloseClick = function (resultName) {
-    return function () {
-      this._close(resultName);
-    }.bind(this);
+  UploadResult.prototype._addErrorEventListeners = function () {
+    this._errorButtons = main.querySelectorAll('.error__button');
+    this._errorButtons[0].addEventListener('click', this._onTryAgainClick);
+    this._errorButtons[1].addEventListener('click', this._hide);
   };
 
-  UploadResult.prototype._addEventListeners = function (resultName) {
-    document.addEventListener('keydown', this._onEscPress(resultName));
+  UploadResult.prototype._removeEventListeners = function () {
+    document.removeEventListener('keydown', this._onEscPress);
+    document.removeEventListener('click', this._onOuterClick);
 
-    getCloseButtons(resultName).forEach(function (button) {
-      button.addEventListener('click', this._onCloseClick(resultName));
-    }.bind(this));
-
-    document.addEventListener('click', this._onOuterClick(resultName));
+    return this._isSuccess
+      ? this._removeSuccessEventListeners()
+      : this._removeErrorEventListeners();
   };
 
-  UploadResult.prototype._removeEventListeners = function (resultName) {
-    document.removeEventListener('keydown', this._onEscPress(resultName));
+  UploadResult.prototype._removeSuccessEventListeners = function () {
+    this._successButton.removeEventListener('click', this._hide);
+  };
 
-    getCloseButtons(resultName).forEach(function (button) {
-      button.removeEventListener('click', this._onCloseClick(resultName));
-    }.bind(this));
+  UploadResult.prototype._removeErrorEventListeners = function () {
+    this._errorButtons[0].addEventListener('click', this._onTryAgainClick);
+    this._errorButtons[1].addEventListener('click', this._hide);
+  };
 
-    document.removeEventListener('click', this._onOuterClick(resultName));
+  UploadResult.prototype._onTryAgainClick = function () {
+    this._hide();
+    this._onSubmit();
+  };
+
+  UploadResult.prototype._onEscPress = function (evt) {
+    return EventUtil.isEscapeKey(evt)
+      && this._hide();
+  };
+
+  UploadResult.prototype._onOuterClick = function (evt) {
+    var name = evt.target.className;
+    return (name === 'error' || name === 'success')
+      && this._hide();
   };
 
   window.UploadResult = UploadResult;
