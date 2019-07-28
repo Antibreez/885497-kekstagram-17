@@ -9,16 +9,21 @@
     main.appendChild(template.cloneNode(true));
   };
 
-  var removeUploadResult = function () {
-    main.removeChild(main.lastChild);
+  var getMessageSection = function () {
+    return main.querySelector('.success')
+      || main.querySelector('.error');
   };
 
-  var UploadResult = function (onSubmit) {
+  var removeUploadResult = function () {
+    main.removeChild(getMessageSection());
+  };
+
+  var UploadResult = function (submit) {
     this._onEscPress = this._onEscPress.bind(this);
     this._onOuterClick = this._onOuterClick.bind(this);
     this._onTryAgainClick = this._onTryAgainClick.bind(this);
     this._hide = this._hide.bind(this);
-    this._onSubmit = onSubmit;
+    this._submit = submit;
     this._isSuccess = true;
   };
 
@@ -80,7 +85,7 @@
 
   UploadResult.prototype._onTryAgainClick = function () {
     this._hide();
-    this._onSubmit();
+    this._submit();
   };
 
   UploadResult.prototype._onEscPress = function (evt) {
@@ -89,9 +94,8 @@
   };
 
   UploadResult.prototype._onOuterClick = function (evt) {
-    var name = evt.target.className;
-    return (name === 'error' || name === 'success')
-      && this._hide();
+    var isScreenArea = ['error', 'success'].indexOf(evt.target.className) > -1;
+    return isScreenArea && this._hide();
   };
 
   window.UploadResult = UploadResult;

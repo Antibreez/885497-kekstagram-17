@@ -13,14 +13,16 @@
   var descInput = form.querySelector('.text__description');
   var hashtagInput = form.querySelector('.text__hashtags');
 
-  var UploadPreview = function () {
+  var UploadPreview = function (onSuccess) {
     this.open = this.open.bind(this);
     this.close = this.close.bind(this);
     this._onEscPress = this._onEscPress.bind(this);
     this._onEnterPress = this._onEnterPress.bind(this);
+    this._onFormSend = this._onFormSend.bind(this);
+    this._onSuccess = onSuccess;
 
     this._effectController = new EffectController();
-    this._uploadForm = new UploadForm(this.close);
+    this._uploadForm = new UploadForm(this._onFormSend);
   };
 
   UploadPreview.prototype.open = function () {
@@ -35,6 +37,14 @@
     DomUtil.clear(hashtagInput, descInput);
     this._removeEventListeners();
     this._uploadForm.removeEventListeners();
+  };
+
+  UploadPreview.prototype._onFormSend = function () {
+    this.close();
+
+    if (this._uploadForm.isSuccess) {
+      this._onSuccess();
+    }
   };
 
   UploadPreview.prototype._onEscPress = function (evt) {
