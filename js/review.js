@@ -6,7 +6,8 @@
     hideElement,
     makeFragmentRender,
     isEscapeKey,
-    isEnterKey
+    isEnterKey,
+    CommentsLoader
 ) {
   var imageContainer = document.querySelector('.big-picture');
   var bigImage = imageContainer.querySelector('.big-picture__img img');
@@ -34,24 +35,31 @@
   };
 
   var getCommentFragment = makeFragmentRender(renderComment);
+  var addComments = function (comments) {
+    commentList.appendChild(getCommentFragment(comments));
+  };
   var setComments = function (comments) {
     commentList.querySelectorAll('.social__comment').forEach(removeComment);
-    commentList.appendChild(getCommentFragment(comments));
+    addComments(comments);
   };
 
   var Review = function () {
     this._close = this._close.bind(this);
     this._onEscPress = this._onEscPress.bind(this);
     this._onEnterPress = this._onEnterPress.bind(this);
+
+    this._commentsLoader = new CommentsLoader(addComments);
   };
 
   Review.prototype.show = function (image) {
     this._addEventListeners();
+    this._commentsLoader.setGroups(image.comments);
     this._update(image);
     showElement(imageContainer);
   };
 
   Review.prototype._close = function () {
+    this._commentsLoader.onClose();
     hideElement(imageContainer);
     this._removeEventListeners();
   };
@@ -61,16 +69,18 @@
     likeCount.textContent = image.likes;
     description.textContent = image.description;
     commentCount.textContent = image.comments.length;
-    setComments(image.comments);
+    setComments(this._commentsLoader.getGroup());
   };
 
   Review.prototype._addEventListeners = function () {
+    this._commentsLoader.addEventListeners();
     cancelButton.addEventListener('click', this._close);
     cancelButton.addEventListener('keydown', this._onEnterPress);
     document.addEventListener('keydown', this._onEscPress);
   };
 
   Review.prototype._removeEventListeners = function () {
+    this._commentsLoader.removeEventListeners();
     cancelButton.removeEventListener('click', this._close);
     cancelButton.removeEventListener('keydown', this._onEnterPress);
     document.removeEventListener('keydown', this._onEscPress);
@@ -91,5 +101,6 @@
     window.DomUtil.hide,
     window.DomUtil.makeFragmentRender,
     window.EventUtil.isEscapeKey,
-    window.EventUtil.isEnterKey
+    window.EventUtil.isEnterKey,
+    window.CommentsLoader
 );

@@ -8,6 +8,10 @@
   };
 
   window.DomUtil = {
+    isHidden: function (element) {
+      return element.classList.contains('hidden');
+    },
+
     show: function (element) {
       element.classList.remove('hidden');
     },
