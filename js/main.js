@@ -1,29 +1,17 @@
 'use strict';
 
-(function (DomUtil, backend, UploadPreview, Gallery) {
-  var uploadFileInput = document.querySelector('#upload-file');
-  var uploadFileControl = document.querySelector('.img-upload__control');
-
-  var onUploadSuccess = function () {
-    DomUtil.hide(uploadFileControl);
-  };
-
-  var uploadPreview = new UploadPreview(onUploadSuccess);
+(function (backend, Gallery, Upload) {
   var gallery = new Gallery();
-
-  var onFileUploadChange = function () {
-    uploadPreview.open();
-  };
+  var upload = new Upload();
 
   var onImagesLoad = function (images) {
     gallery.add(images);
   };
 
   backend.load(onImagesLoad);
-  uploadFileInput.addEventListener('change', onFileUploadChange);
+  upload.addEventListeners();
 })(
-    window.DomUtil,
     window.backend,
-    window.UploadPreview,
-    window.Gallery
+    window.Gallery,
+    window.Upload
 );

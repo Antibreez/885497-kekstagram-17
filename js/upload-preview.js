@@ -7,6 +7,7 @@
     UploadForm
 ) {
   var upload = document.querySelector('.img-upload__overlay');
+  var previewImage = document.querySelector('.img-upload__preview img');
   var cancelButton = upload.querySelector('#upload-cancel');
 
   var form = document.querySelector('.img-upload__form');
@@ -25,11 +26,22 @@
     this._uploadForm = new UploadForm(this._onFormSend);
   };
 
-  UploadPreview.prototype.open = function () {
+  UploadPreview.prototype.open = function (file) {
     DomUtil.show(upload);
+    this._set(file);
     this._effectController.purge();
     this._addEventListeners();
     this._uploadForm.addEventListeners();
+  };
+
+  UploadPreview.prototype._onLoad = function () {
+    URL.revokeObjectURL(previewImage.src);
+    previewImage.onload = null;
+  };
+
+  UploadPreview.prototype._set = function (file) {
+    previewImage.src = URL.createObjectURL(file);
+    previewImage.onload = this._onLoad;
   };
 
   UploadPreview.prototype.close = function () {
