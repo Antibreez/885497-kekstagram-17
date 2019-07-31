@@ -26,16 +26,22 @@
     this._uploadForm = new UploadForm(this._onFormSend);
   };
 
-  UploadPreview.prototype.open = function (imageSrc) {
+  UploadPreview.prototype.open = function (file) {
     DomUtil.show(upload);
-    this._set(imageSrc);
+    this._set(file);
     this._effectController.purge();
     this._addEventListeners();
     this._uploadForm.addEventListeners();
   };
 
-  UploadPreview.prototype._set = function (imageSrc) {
-    previewImage.src = imageSrc;
+  UploadPreview.prototype._onLoad = function () {
+    URL.revokeObjectURL(previewImage.src);
+    previewImage.onload = null;
+  };
+
+  UploadPreview.prototype._set = function (file) {
+    previewImage.src = URL.createObjectURL(file);
+    previewImage.onload = this._onLoad;
   };
 
   UploadPreview.prototype.close = function () {

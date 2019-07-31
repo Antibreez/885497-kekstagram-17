@@ -10,14 +10,17 @@
     DomUtil.hide(uploadFileControl);
   };
 
-  var isImage = function (file) {
-    var fileName = file.name.toLowerCase();
+  var getFileExt = function (filename) {
+    var dot = filename.lastIndexOf('.') + 1;
+    return dot > 0 ? filename.slice(dot) : '';
+  };
 
-    return FILE_TYPES.indexOf(fileName.split('.').pop()) !== -1;
+  var isValidImage = function (file) {
+    var ext = getFileExt(file.name).toLowerCase();
+    return FILE_TYPES.indexOf(ext) > -1;
   };
 
   var Upload = function () {
-    this._onLoad = this._onLoad.bind(this);
     this._onChange = this._onChange.bind(this);
 
     this._uploadPreview = new UploadPreview(onUploadSuccess);
@@ -30,21 +33,9 @@
   Upload.prototype._onChange = function () {
     var file = uploadFileInput.files[0];
 
-    if (isImage(file)) {
-      var reader = new FileReader();
-
-      reader.addEventListener('load', this._onLoad(reader));
-
-      reader.readAsDataURL(file);
+    if (isValidImage(file)) {
+      this._uploadPreview.open(file);
     }
-  };
-
-  Upload.prototype._onLoad = function (reader) {
-    var open = this._uploadPreview.open;
-
-    return function () {
-      open(reader.result);
-    };
   };
 
   window.Upload = Upload;
