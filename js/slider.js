@@ -1,6 +1,10 @@
 'use strict';
 
-(function (EffectLineRect, DomUtil, EventUtil) {
+(function (
+    EffectLineRect,
+    DomUtil,
+    EventUtil
+) {
   var showElement = DomUtil.show;
   var hideElement = DomUtil.hide;
   var makeDragStart = EventUtil.make.makeDragStart;
