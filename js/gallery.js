@@ -11,12 +11,12 @@
   var imageList = document.querySelector('.pictures');
   var imageTemplate = document.querySelector('#picture').content.querySelector('.picture');
 
-  var renderImage = function (image, id) {
+  var renderImage = function (image) {
     var node = imageTemplate.cloneNode(true);
     node.querySelector('.picture__img').src = image.url;
     node.querySelector('.picture__likes').textContent = image.likes;
     node.querySelector('.picture__comments').textContent = image.comments.length;
-    node.dataset.id = id;
+    node.dataset.id = image.id;
 
     return node;
   };
@@ -48,7 +48,11 @@
   };
 
   Gallery.prototype.add = function (images) {
-    this._images = this._images.concat(images);
+    this._images = images.map(function (image, idx) {
+      image.id = idx;
+      return image;
+    });
+
     this._filterBar.show();
     setImages(this._images);
   };
@@ -69,7 +73,7 @@
   Gallery.prototype._onImagesClick = function (evt) {
     var element = evt.target.parentElement;
     return isPicture(element)
-      && this._preview(element.dataset.id);
+      && this._preview(+element.dataset.id);
   };
 
   Gallery.prototype._onImageEnterPress = function (evt) {

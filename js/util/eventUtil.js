@@ -32,14 +32,6 @@
       return evt.key === 'Enter';
     },
 
-    isLeftKey: function (evt) {
-      return evt.key === 'Left' || evt.key === 'ArrowLeft';
-    },
-
-    isRightKey: function (evt) {
-      return evt.key === 'Right' || evt.key === 'ArrowRight';
-    },
-
     isNotTarget: function (evt, element) {
       return evt.target !== element;
     },
